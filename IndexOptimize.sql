@@ -1,4 +1,4 @@
-﻿SET ANSI_NULLS ON
+SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
@@ -43,7 +43,8 @@ ALTER PROCEDURE [dbo].[IndexOptimize]
 @DatabasesInParallel nvarchar(max) = 'N',
 @ExecuteAsUser nvarchar(max) = NULL,
 @LogToTable nvarchar(max) = 'N',
-@Execute nvarchar(max) = 'Y'
+@Execute nvarchar(max) = 'Y',
+@CurrentStatisticsPersistedSample nvarchar(max) = 'N'
 
 AS
 
@@ -2245,6 +2246,12 @@ BEGIN
             SELECT 'RESAMPLE'
           END
 
+		  IF @CurrentStatisticsPersistedSample = 'Y'
+          BEGIN
+            INSERT INTO @CurrentUpdateStatisticsWithClauseArguments (Argument)
+            SELECT 'PERSIST_SAMPLE_PERCENT = ON'
+          END
+
           IF @CurrentNoRecompute = 1
           BEGIN
             INSERT INTO @CurrentUpdateStatisticsWithClauseArguments (Argument)
@@ -2431,6 +2438,4 @@ BEGIN
   ----------------------------------------------------------------------------------------------------
 
 END
-
 GO
-
